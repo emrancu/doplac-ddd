@@ -1,0 +1,40 @@
+{
+  "name": "doplac/domain-driven-development",
+  "description": "Besnik DDD",
+  "keywords": [
+    "laravel",
+    "doplac"
+  ],
+  "authors": [
+    {
+      "name": "AL EMRAN",
+      "email": "emrancu1@gmail.com"
+    }
+  ],
+  "require": {
+  },
+  "license": "PRIVATE",
+  "autoload": {
+    "classmap": [
+      "src/Commands/GeneratorCommand.php",
+      "src/Commands/BaseCommand.php",
+      "src/Translation/TranslationServiceProvider.php"
+    ],
+    "psr-4": {
+      "Doplac\\Domain\\": "/src"
+      }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Doplac\\Domain\\DomainDrivenServiceProvider"
+      ],
+      "commands": [
+        "Doplac\\Domain\\Commands\\DomainMigration",
+        "Doplac\\Domain\\Commands\\DomainSeed"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
