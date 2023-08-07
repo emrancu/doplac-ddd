@@ -128,16 +128,6 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
      */
     public function __construct(Filesystem $files)
     {
-        //        $comm = new CommandSupports();
-        //
-        //        $domain = select(
-        //            label: 'Please select domain!',
-        //            options: $comm->getDomains(),
-        //            default: 'root'
-        //        );
-
-        //  dd($comm->getDomainDetails($domain));
-
         parent::__construct();
 
         if (in_array(CreatesMatchingTest::class, class_uses_recursive($this))) {
@@ -223,11 +213,7 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
         if (Str::startsWith($name, $rootNamespace)) {
             return $name;
         }
-
-
-        // dd($this->getDefaultNamespace(trim($rootNamespace, '\\')));
-
-
+        
         return $this->qualifyClass(
             $this->getDefaultNamespace(trim($rootNamespace, '\\')).'\\'.$name
         );
@@ -446,7 +432,7 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
             return $this->domain['namespace'];
         }
 
-        $comm = new DomainSupport();
+        $comm = new DomainSupport(true);
 
         $domain = select(
             label: 'Please select domain!',

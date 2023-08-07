@@ -53,7 +53,7 @@ class BaseCommand extends Command
             return $this->domain;
         }
 
-        $comm = new DomainSupport();
+        $comm = new DomainSupport(true);
 
         $domain = select(
             label: 'Please select domain for migration file!',

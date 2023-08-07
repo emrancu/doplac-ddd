@@ -38,7 +38,7 @@ class DomainMigration extends Command
 
         $this->info('Migrations completed for App----');
 
-        $support =  new DomainSupport();
+        $support =  new DomainSupport(true);
         $domains =  $support->getDomains();
         unset($domains['App']);
 

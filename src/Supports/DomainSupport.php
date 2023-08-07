@@ -19,7 +19,7 @@ class DomainSupport
 
     protected function generate(): void
     {
-        if ($this->withoutCache) {
+        if ($this->withoutCache || !app()->isProduction()) {
             Cache::forget('doplac_domain_related_data');
         }
 
