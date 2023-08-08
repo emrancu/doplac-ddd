@@ -41,6 +41,12 @@ class DomainDrivenServiceProvider extends ServiceProvider
 
     public function register()
     {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \Doplac\Domain\Commands\DomainMigration::class,
+                \Doplac\Domain\Commands\DomainSeed::class,
+            ]);
+        }
 
     }
 
