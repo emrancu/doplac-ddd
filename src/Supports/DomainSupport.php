@@ -33,9 +33,12 @@ class DomainSupport
             $domains = [];
             $factories = [];
 
-
             foreach ($autoload as $namespace => $path) {
-                $title = trim($namespace, '\\');
+
+                $pattern = '/domain\/([^\/]+)\//';
+                preg_match($pattern, $path, $matches);
+
+                $title = trim($matches[1], '\\');
                 $data = [
                     'title' => $title,
                     'namespace' => $namespace,
