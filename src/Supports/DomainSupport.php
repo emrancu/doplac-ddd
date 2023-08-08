@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doplac\Domain\Supports;
@@ -33,12 +34,16 @@ class DomainSupport
             $domains = [];
             $factories = [];
 
+            $i = 1;
             foreach ($autoload as $namespace => $path) {
+                if ($namespace == 'App\\') {
+                    $title = 'app';
+                } else {
+                    $pattern = '/domain\/([^\/]+)\//';
+                    preg_match($pattern, $path, $matches);
+                    $title = trim($matches[1] ?? $namespace, '\\');
+                }
 
-                $pattern = '/domain\/([^\/]+)\//';
-                preg_match($pattern, $path, $matches);
-
-                $title = trim($matches[1], '\\');
                 $data = [
                     'title' => $title,
                     'namespace' => $namespace,
@@ -61,8 +66,9 @@ class DomainSupport
                 if (Str::contains($path, 'factories')) {
                     $factories[$title] = $data;
                 }
-            }
 
+                $i++;
+            }
             return [
                 'factories' => $factories,
                 'domains' => $domains,

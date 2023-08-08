@@ -20,16 +20,18 @@ class DomainDrivenServiceProvider extends ServiceProvider
             $support = new DomainSupport();
 
             foreach ($support->getDomains() as $domain) {
-                if ($domain['title'] === 'App') {
+                if ($domain['title'] === 'app') {
                     continue;
                 }
 
                 $baseName = Str::snake($domain['title']); // prefix of config
-                
+
                 $files = File::allFiles($domain['real_path'].'../config');
 
                 foreach ($files as $file) {
+
                     $configName = explode('.', $file->getFilename())[0] ?? null;
+
                     Config::set("$baseName.$configName", require $file->getRealPath());
                 }
             }
