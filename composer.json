@@ -13,7 +13,7 @@
   ],
   "require": {
   },
-  "license": "PRIVATE",
+  "license": "MIT",
   "autoload": {
     "classmap": [
       "src/Commands/GeneratorCommand.php",
