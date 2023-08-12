@@ -16,12 +16,12 @@
   "license": "MIT",
   "autoload": {
     "classmap": [
-      "src/Commands/GeneratorCommand.php",
       "src/Commands/BaseCommand.php",
       "src/Translation/TranslationServiceProvider.php"
     ],
     "psr-4": {
-      "Doplac\\Domain\\": "/src"
+      "Doplac\\Domain\\": "/src",
+      "Illuminate\\Console\\": "/Override"
       }
   },
   "extra": {
