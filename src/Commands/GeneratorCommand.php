@@ -15,6 +15,7 @@ use function Laravel\Prompts\select;
 
 abstract class GeneratorCommand extends Command implements PromptsForMissingInput
 {
+    
     /**
      * The filesystem instance.
      *
