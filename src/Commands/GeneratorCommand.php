@@ -1,9 +1,8 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace Illuminate\Console;
 
-
-use Doplac\Domain\Supports\DomainSupport;
+use Doplac\Domain\Traits\GeneratorOverride;
 use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Filesystem\Filesystem;
@@ -11,11 +10,10 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Finder\Finder;
 
-use function Laravel\Prompts\select;
-
 abstract class GeneratorCommand extends Command implements PromptsForMissingInput
 {
-    
+    use GeneratorOverride;
+
     /**
      * The filesystem instance.
      *
@@ -29,7 +27,6 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
      * @var string
      */
     protected $type;
-    protected array $domain = [];
 
     /**
      * Reserved names that cannot be used for generation.
@@ -171,8 +168,8 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
         // to create the class and overwrite the user's code. So, we will bail out so the
         // code is untouched. Otherwise, we will continue generating this class' files.
         if ((! $this->hasOption('force') ||
-             ! $this->option('force')) &&
-             $this->alreadyExists($this->getNameInput())) {
+                ! $this->option('force')) &&
+            $this->alreadyExists($this->getNameInput())) {
             $this->components->error($this->type.' already exists.');
 
             return false;
@@ -204,7 +201,6 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
      */
     protected function qualifyClass($name)
     {
-
         $name = ltrim($name, '\\/');
 
         $name = str_replace('/', '\\', $name);
@@ -214,7 +210,7 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
         if (Str::startsWith($name, $rootNamespace)) {
             return $name;
         }
-        
+
         return $this->qualifyClass(
             $this->getDefaultNamespace(trim($rootNamespace, '\\')).'\\'.$name
         );
@@ -239,8 +235,8 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
         }
 
         return is_dir(app_path('Models'))
-                    ? $rootNamespace.'Models\\'.$model
-                    : $rootNamespace.$model;
+            ? $rootNamespace.'Models\\'.$model
+            : $rootNamespace.$model;
     }
 
     /**
@@ -252,7 +248,7 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
     {
         $modelPath = is_dir(app_path('Models')) ? app_path('Models') : app_path();
 
-        return collect((new Finder())->files()->depth(0)->in($modelPath))
+        return collect((new Finder)->files()->depth(0)->in($modelPath))
             ->map(fn ($file) => $file->getBasename('.php'))
             ->values()
             ->all();
@@ -271,7 +267,7 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
             return [];
         }
 
-        return collect((new Finder())->files()->depth(0)->in($eventPath))
+        return collect((new Finder)->files()->depth(0)->in($eventPath))
             ->map(fn ($file) => $file->getBasename('.php'))
             ->values()
             ->all();
@@ -297,19 +293,6 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
     protected function alreadyExists($rawName)
     {
         return $this->files->exists($this->getPath($this->qualifyClass($rawName)));
-    }
-
-    /**
-     * Get the destination class path.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getPath($name)
-    {
-        $name = Str::replaceFirst($this->rootNamespace(), '', $name);
-
-        return $this->domain['real_path'].str_replace('\\', '/', $name).'.php';
     }
 
     /**
@@ -423,30 +406,6 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
     }
 
     /**
-     * Get the root namespace for the class.
-     *
-     * @return string
-     */
-    protected function rootNamespace()
-    {
-        if(! empty($this->domain)) {
-            return $this->domain['namespace'];
-        }
-
-        $comm = new DomainSupport(true);
-
-        $domain = select(
-            label: 'Please select domain!',
-            options: $comm->getOnlyDomains(),
-            default: 'App'
-        );
-
-        $this->domain = $comm->getDomainDetails($domain);
-
-        return $this->domain['namespace'];
-    }
-
-    /**
      * Get the model for the default guard's user provider.
      *
      * @return string|null
@@ -506,7 +465,35 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
     protected function promptForMissingArgumentsUsing()
     {
         return [
-            'name' => 'What should the '.strtolower($this->type).' be named?',
+            'name' => [
+                'What should the '.strtolower($this->type).' be named?',
+                match ($this->type) {
+                    'Cast' => 'E.g. Json',
+                    'Channel' => 'E.g. OrderChannel',
+                    'Console command' => 'E.g. SendEmails',
+                    'Component' => 'E.g. Alert',
+                    'Controller' => 'E.g. UserController',
+                    'Event' => 'E.g. PodcastProcessed',
+                    'Exception' => 'E.g. InvalidOrderException',
+                    'Factory' => 'E.g. PostFactory',
+                    'Job' => 'E.g. ProcessPodcast',
+                    'Listener' => 'E.g. SendPodcastNotification',
+                    'Mail' => 'E.g. OrderShipped',
+                    'Middleware' => 'E.g. EnsureTokenIsValid',
+                    'Model' => 'E.g. Flight',
+                    'Notification' => 'E.g. InvoicePaid',
+                    'Observer' => 'E.g. UserObserver',
+                    'Policy' => 'E.g. PostPolicy',
+                    'Provider' => 'E.g. ElasticServiceProvider',
+                    'Request' => 'E.g. StorePodcastRequest',
+                    'Resource' => 'E.g. UserResource',
+                    'Rule' => 'E.g. Uppercase',
+                    'Scope' => 'E.g. TrendingScope',
+                    'Seeder' => 'E.g. UserSeeder',
+                    'Test' => 'E.g. UserTest',
+                    default => '',
+                },
+            ],
         ];
     }
 }
