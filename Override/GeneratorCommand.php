@@ -1,5 +1,7 @@
 <?php
 
+namespace Doplac\Override;
+
 use Doplac\Domain\Traits\GeneratorOverride;
 use Illuminate\Console\GeneratorCommand as GeneratorCommandOld;
 

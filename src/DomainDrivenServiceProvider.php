@@ -48,7 +48,7 @@ class DomainDrivenServiceProvider extends ServiceProvider
             ]);
         }
 
-        class_alias('Doplac\Domain\Commands\Generator', 'Illuminate\Console\GeneratorCommand');
+        class_alias('Doplac\Override\GeneratorCommand', 'Illuminate\Console\GeneratorCommand');
     }
 
 }
