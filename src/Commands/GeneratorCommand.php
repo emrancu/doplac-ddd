@@ -8,6 +8,5 @@ use Illuminate\Console\GeneratorCommand;
 abstract class Generator extends GeneratorCommand
 {
     use GeneratorOverride;
-
-
+    
 }
