@@ -1,11 +1,11 @@
 <?php
 
-namespace Doplac\Domain\Commands;
+namespace Illuminate\Console;
 
 use Doplac\Domain\Traits\GeneratorOverride;
-use Illuminate\Console\GeneratorCommand;
+use Illuminate\Console\GeneratorCommand as GeneratorCommandOld;
 
-abstract class Generator extends GeneratorCommand
+abstract class Generator extends GeneratorCommandOld
 {
     use GeneratorOverride;
     
