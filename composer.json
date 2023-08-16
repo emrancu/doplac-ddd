@@ -15,6 +15,9 @@
   },
   "license": "MIT",
   "autoload": {
+    "files": [
+      "src/Supports/global_functions.php"
+    ],
     "classmap": [
       "src/Commands/GeneratorCommand.php",
       "src/Commands/BaseCommand.php",

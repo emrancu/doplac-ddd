@@ -39,7 +39,7 @@ class DomainSupport
                 if ($namespace == 'App\\') {
                     $title = 'app';
                 } else {
-                    $pattern = '/domain\/([^\/]+)\//';
+                    $pattern = '/domains\/([^\/]+)\//';
                     preg_match($pattern, $path, $matches);
                     $title = trim($matches[1] ?? $namespace, '\\');
                 }
