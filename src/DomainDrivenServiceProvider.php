@@ -12,12 +12,13 @@ class DomainDrivenServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        $support = new DomainSupport();
+
         /**
          * set configuration file support from all domain with domain name's snake case prefix. like config('email_marketing.services')
          * and also set language file support from all domains with domain name's snake case namespace. Like: trans('data_store::campaign')
          */
         if (! app()->configurationIsCached()) {
-            $support = new DomainSupport();
 
             foreach ($support->getDomains() as $domain) {
                 if ($domain['title'] === 'app') {
@@ -37,6 +38,7 @@ class DomainDrivenServiceProvider extends ServiceProvider
             }
         }
 
+        $this->loadRoutesFrom(__DIR__.'/routes/web.php');
     }
 
     public function register()

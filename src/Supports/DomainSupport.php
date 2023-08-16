@@ -36,6 +36,11 @@ class DomainSupport
 
             $i = 1;
             foreach ($autoload as $namespace => $path) {
+
+                if(!is_dir(base_path($path))) {
+                    continue;
+                }
+
                 if ($namespace == 'App\\') {
                     $title = 'app';
                 } else {
