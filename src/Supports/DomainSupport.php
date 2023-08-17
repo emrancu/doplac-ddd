@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class DomainSupport
 {
-    private static DomainSupport $instance;
+    private static DomainSupport|null $instance = null;
     public bool $withoutCache = false;
     private array $domains = [];
     private array $seeders = [];
