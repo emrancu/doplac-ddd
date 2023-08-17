@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
             });
 
             Route::middleware('api')->prefix('api/'.Str::snake($domain['title'], '-'))->group(function () use ($domain) {
-                require base_path($domain['path'].'../routes/web.php');
+                require base_path($domain['path'].'../routes/api.php');
             });
         }
     }
