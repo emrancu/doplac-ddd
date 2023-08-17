@@ -2,7 +2,7 @@
 
 namespace Illuminate\Console;
 
-use Doplac\Domain\Traits\GeneratorOverride;
+use ZupiterDoplac\Domain\Traits\GeneratorOverride;
 use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Filesystem\Filesystem;

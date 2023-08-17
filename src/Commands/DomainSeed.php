@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Doplac\Domain\Commands;
+namespace ZupiterDoplac\Domain\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;

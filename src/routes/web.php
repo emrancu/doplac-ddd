@@ -1,13 +1,13 @@
 <?php
 
 
-use Doplac\Domain\Supports\DomainSupport;
+use ZupiterDoplac\Domain\Supports\DomainSupport;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 
 
-   $support = new DomainSupport();
+   $support = DomainSupport::init();
 
 
     foreach ($support->getDomains() as $domain) {

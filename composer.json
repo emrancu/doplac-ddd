@@ -24,17 +24,17 @@
       "src/Translation/TranslationServiceProvider.php"
     ],
     "psr-4": {
-      "Doplac\\Domain\\": "/src"
+      "ZupiterDoplac\\Domain\\": "/src"
       }
   },
   "extra": {
     "laravel": {
       "providers": [
-        "Doplac\\Domain\\DomainDrivenServiceProvider"
+        "ZupiterDoplac\\Domain\\DomainDrivenServiceProvider"
       ],
       "commands": [
-        "Doplac\\Domain\\Commands\\DomainMigration",
-        "Doplac\\Domain\\Commands\\DomainSeed"
+        "ZupiterDoplac\\Domain\\Commands\\DomainMigration",
+        "ZupiterDoplac\\Domain\\Commands\\DomainSeed"
       ]
     }
   },

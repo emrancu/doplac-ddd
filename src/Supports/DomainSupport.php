@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Doplac\Domain\Supports;
+namespace ZupiterDoplac\Domain\Supports;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class DomainSupport
 {
+    private static DomainSupport $instance;
+    public bool $withoutCache = false;
     private array $domains = [];
     private array $seeders = [];
     private array $factories = [];
 
-    public function __construct(public readonly bool $withoutCache = false)
+    public function __construct()
     {
         $this->generate();
     }
@@ -36,8 +38,7 @@ class DomainSupport
 
             $i = 1;
             foreach ($autoload as $namespace => $path) {
-
-                if(!is_dir(base_path($path))) {
+                if (!is_dir(base_path($path))) {
                     continue;
                 }
 
@@ -84,6 +85,20 @@ class DomainSupport
         $this->seeders = $cachedData['seeders'];
         $this->factories = $cachedData['factories'];
         $this->domains = $cachedData['domains'];
+    }
+
+    public static function init($withoutCache = false): DomainSupport
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        if ($withoutCache) {
+            self::$instance->withoutCache = $withoutCache;
+            self::$instance->generate();
+        }
+
+        return self::$instance;
     }
 
     public function getOnlyDomains(): array

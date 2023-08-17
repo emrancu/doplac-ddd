@@ -2,7 +2,7 @@
 
 namespace Illuminate\Translation;
 
-use Doplac\Domain\Supports\DomainSupport;
+use ZupiterDoplac\Domain\Supports\DomainSupport;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -43,7 +43,7 @@ class TranslationServiceProvider extends ServiceProvider implements DeferrablePr
     {
         $this->app->singleton('translation.loader', function ($app) {
 
-            $support = new DomainSupport();
+            $support = DomainSupport::init();
             $domainLangDirectories = [__DIR__.'/lang', $app['path.lang']];
             foreach ($support->getDomains() as $domain) {
                 if ($domain['title'] === 'App') {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Doplac\Domain\Traits;
+namespace ZupiterDoplac\Domain\Traits;
 
-use Doplac\Domain\Supports\DomainSupport;
+use ZupiterDoplac\Domain\Supports\DomainSupport;
 
 use Illuminate\Support\Str;
 
@@ -24,7 +24,7 @@ trait GeneratorOverride
             return $this->domain['namespace'];
         }
 
-        $comm = new DomainSupport(true);
+        $comm = DomainSupport::init(true);
 
         $domain = select(
             label: 'Please select domain!',

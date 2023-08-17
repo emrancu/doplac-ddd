@@ -1,7 +1,7 @@
 <?php
 
 
-use Doplac\Domain\Supports\DomainSupport;
+use ZupiterDoplac\Domain\Supports\DomainSupport;
 
 
 

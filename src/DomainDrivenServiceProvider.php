@@ -1,8 +1,8 @@
 <?php
 
-namespace Doplac\Domain;
+namespace ZupiterDoplac\Domain;
 
-use Doplac\Domain\Supports\DomainSupport;
+use ZupiterDoplac\Domain\Supports\DomainSupport;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
@@ -12,7 +12,7 @@ class DomainDrivenServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $support = new DomainSupport();
+        $support = DomainSupport::init();
 
         /**
          * set configuration file support from all domain with domain name's snake case prefix. like config('email_marketing.services')
@@ -45,8 +45,8 @@ class DomainDrivenServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                \Doplac\Domain\Commands\DomainMigration::class,
-                \Doplac\Domain\Commands\DomainSeed::class,
+                \ZupiterDoplac\Domain\Commands\DomainMigration::class,
+                \ZupiterDoplac\Domain\Commands\DomainSeed::class,
             ]);
         }
 

@@ -2,7 +2,7 @@
 
 namespace Illuminate\Database\Console\Migrations;
 
-use Doplac\Domain\Supports\DomainSupport;
+use ZupiterDoplac\Domain\Supports\DomainSupport;
 use Illuminate\Console\Command;
 
 use Illuminate\Support\Str;
@@ -53,7 +53,7 @@ class BaseCommand extends Command
             return $this->domain;
         }
 
-        $comm = new DomainSupport(true);
+        $comm = DomainSupport::init(true);
 
         $domain = select(
             label: 'Please select domain for migration file!',

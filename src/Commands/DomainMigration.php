@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Doplac\Domain\Commands;
+namespace ZupiterDoplac\Domain\Commands;
 
-use Doplac\Domain\Supports\DomainSupport;
+use ZupiterDoplac\Domain\Supports\DomainSupport;
 use Illuminate\Console\Command;
 
 class DomainMigration extends Command
@@ -38,7 +38,7 @@ class DomainMigration extends Command
 
         $this->info('Migrations completed for App----');
 
-        $support =  new DomainSupport(true);
+        $support = DomainSupport::init(true);
         $domains =  $support->getDomains();
         unset($domains['App']);
 
