@@ -36,7 +36,7 @@ class DomainDrivenServiceProvider extends ServiceProvider
             }
         }
 
-        $this->loadRoutesFrom(__DIR__.'/routes/web.php');
+      //  $this->loadRoutesFrom(__DIR__.'/routes/web.php');
 
         foreach ($support->getDomains() as $domain) {
             if ($domain['title'] === 'app') {
@@ -57,13 +57,6 @@ class DomainDrivenServiceProvider extends ServiceProvider
             foreach ($support->getDomains() as $domain) {
                 if ($domain['title'] === 'app') {
                     continue;
-                }
-
-                if (is_dir($domain['real_path'].'/Providers')) {
-                    foreach (File::allFiles($domain['real_path'].'/Providers') as $file) {
-                        $fileName = explode('.', $file->getFilename())[0];
-                        app()->register('\\'.$domain['namespace'].'Providers\\'.$fileName);
-                    }
                 }
 
                 if (is_dir($domain['real_path'].'/Console/Commands')) {
