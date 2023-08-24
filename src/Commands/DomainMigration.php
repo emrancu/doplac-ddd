@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ZupiterDoplac\Domain\Commands;
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use ZupiterDoplac\Domain\Supports\DomainSupport;
 use Illuminate\Console\Command;
 
@@ -40,15 +42,30 @@ class DomainMigration extends Command
 
         $support = DomainSupport::init(true);
         $domains =  $support->getDomains();
-        unset($domains['App']);
+
+        unset($domains['app']);
 
         foreach ($domains as $domain) {
 
             $this->info('Start migration from '.$domain['title']);
 
-            $this->call('migrate', ['--path' => $domain['path'].'../database/migrations']);
+            if($domain['title'] === 'flowgiri'){
+                Config::set('database.connections.mysql.prefix', 'flowgiri_');
+                DB::purge('mysql');
+                DB::connection('mysql');
+            }
+
+            if($domain['title'] === 'ezytor'){
+                Config::set('database.connections.mysql.prefix', 'ezytor');
+                DB::purge('mysql');
+                DB::connection('mysql');
+            }
+
+            $this->call('migrate',  ['--path' => $domain['path'].'../database/migrations']);
 
             $this->info('Completed migration from '.$domain['title']);
+
+            config(['database.connections.mysql.prefix' => '']);
         }
 
         $this->alert('All domain\'s migration completed.');
