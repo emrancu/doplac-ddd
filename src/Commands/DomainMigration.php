@@ -56,7 +56,7 @@ class DomainMigration extends Command
             }
 
             if($domain['title'] === 'ezytor'){
-                Config::set('database.connections.mysql.prefix', 'ezytor');
+                Config::set('database.connections.mysql.prefix', 'ezytor_');
                 DB::purge('mysql');
                 DB::connection('mysql');
             }
