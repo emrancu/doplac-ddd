@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'fs';
 import bodyParser from 'body-parser';
+import ssrData from '../../../../../ssr.js'
 
 export function getDir(url){
     return path.dirname(fileURLToPath(url))
@@ -20,7 +21,7 @@ export function getFile(dirname, filePath) {
 
 import { render } from './../../../../../bootstrap/ssr/server/server-entry.js';
 
-const PORT = 6173
+const PORT = ssrData.port    || 6173
 
 function removeScriptTags(inputString) {
     const pattern = /<script type="module"[^>]*>[\s\S]*?<\/script>/g;
