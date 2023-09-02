@@ -7,11 +7,10 @@ import ssrData from '../../../../../ssr.js'
 
 const routes = [];
 
-for (const key in ssrData) {
-    console.log( ssrData[key], 'okok')
+for (const key in ssrData.apps) { 
     routes.push({
         path: '/'+ key,
-        component: ssrData[key],
+        component: ssrData.apps[key],
     })
 }
  
