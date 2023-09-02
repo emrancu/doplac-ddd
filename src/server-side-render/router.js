@@ -3,20 +3,22 @@ import {
     createMemoryHistory,
 } from 'vue-router'
 
-import Home from "./../Home.vue";
+import ssrData from '../../../../../ssr.js'
 
+const routes = [];
+
+for (const key in ssrData) {
+    console.log( ssrData[key], 'okok')
+    routes.push({
+        path: '/'+ key,
+        component: ssrData[key],
+    })
+}
+ 
 let props = {};
-
-const routes = [
-    {
-        path: "/",
-        component: () => Home,
-    }
-]
 
 export const createRouter = (appProps = {}) => {
     props = appProps;
-    console.log(props,'props from rrrrr')
     routes.map(item=>{
       item.props =  props;
       return item
