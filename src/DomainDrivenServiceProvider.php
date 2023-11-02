@@ -60,9 +60,9 @@ class DomainDrivenServiceProvider extends ServiceProvider
                 }
 
                 if (is_dir($domain['real_path'].'/Console/Commands')) {
-                    if (is_file($domain['real_path'].'/Console/Kernel.php')) {
-                        app()->make('\\'.$domain['namespace'].'Console\\Kernel');
-                    }
+                   // if (is_file($domain['real_path'].'/Console/Kernel.php')) {
+                   //     app()->make('\\'.$domain['namespace'].'Console\\Kernel');
+                   // }
 
                     foreach (File::allFiles($domain['real_path'].'/Console/Commands') as $file) {
                         $fileName = explode('.', $file->getFilename())[0];
