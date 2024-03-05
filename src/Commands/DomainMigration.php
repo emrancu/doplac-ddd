@@ -16,7 +16,7 @@ class DomainMigration extends Command
      *
      * @var string
      */
-    protected $signature = 'domain:migrate {--fresh : Drop all tables and re-run all migrations}';
+    protected $signature = 'domain:migrate {--fresh : Drop all tables and re-run all migrations} {  --force : Force migrate }';
 
     /**
      * The console command description.
@@ -32,10 +32,15 @@ class DomainMigration extends Command
     {
         $fresh = $this->option('fresh');
 
+        $force = $this->option('force');
+
+        $forceOption = $force ? ['--force' => true] : [] ;
+
         if ($fresh) {
-            $this->call('migrate:fresh');
+            $this->call('migrate:fresh', $forceOption) ;
+            return;
         } else {
-            $this->call('migrate');
+            $this->call('migrate', $forceOption);
         }
 
         $this->info('Migrations completed for App----');
@@ -61,7 +66,7 @@ class DomainMigration extends Command
                 DB::connection('mysql');
             }
 
-            $this->call('migrate',  ['--path' => $domain['path'].'../database/migrations']);
+            $this->call('migrate',  ['--path' => $domain['path'].'../database/migrations', ...$forceOption]);
 
             $this->info('Completed migration from '.$domain['title']);
 
