@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ZupiterDoplac\Domain\Supports;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class DomainSupport
@@ -17,17 +19,69 @@ class DomainSupport
 
     public function __construct()
     {
-        $this->generate();
+        $this->cacheData();
     }
 
-    protected function generate(): void
-    {
-        if ($this->withoutCache || !app()->isProduction()) {
-            Cache::forget('doplac_domain_related_data');
+   private function arrayToString($array, $indent = 0) {
+        $output = '';
+
+        foreach ($array as $key => $value) {
+            $output .= str_repeat(' ', $indent * 4) . "'" . $key . "' => ";
+
+            if (is_array($value)) {
+                $output .= "[\n" . $this->arrayToString($value, $indent + 1) . str_repeat(' ', $indent * 4) . "],\n";
+            } else {
+                $output .= "'" . addslashes($value) . "',\n";
+            }
         }
 
+        return $output;
+    }
+
+
+    public static function clearData()
+    {
+        $storagePath = storage_path('app/domain-data.php');
+
+        if (file_exists($storagePath)) {
+            unlink($storagePath);
+        }
+    }
+
+
+    private function cacheData()
+    {
+        $storagePath = storage_path('app/domain-data.php');
+
+        if (!file_exists($storagePath)) {
+
+            $content = $this->data();
+
+            $returnStatement = $this->arrayToString($content, 1);
+
+            $contentFinal = "<?php\n\n";
+            $contentFinal .= "return [\n" . $returnStatement . "];\n";
+
+            $this->seeders = $content['seeders'];
+            $this->factories = $content['factories'];
+            $this->domains = $content['domains'];
+
+            if (file_put_contents($storagePath, $contentFinal) !== false) {
+            }
+
+            return;
+        }
+
+        $content =  include $storagePath;
+        $this->seeders = $content['seeders'];
+        $this->factories = $content['factories'];
+        $this->domains = $content['domains'];
+    }
+
+    protected function data(): array
+    {
         /** @var array{ factories: array, domains: array, seeders: array } $cachedData */
-        $cachedData = Cache::rememberForever('doplac_domain_related_data', function () {
+
             $composerData = json_decode(file_get_contents(base_path('composer.json')), true);
             $autoload = $composerData['autoload']['psr-4'] ?? [];
 
@@ -54,7 +108,10 @@ class DomainSupport
                     'title' => $title,
                     'namespace' => $namespace,
                     'path' => $path,
-                    'real_path' => base_path($path)
+                    'real_path' => base_path($path),
+                    'config_files' => [],
+                    'providers' => [],
+                    'commands' => [],
                 ];
 
                 if (Str::contains($path, 'seeders')) {
@@ -64,7 +121,45 @@ class DomainSupport
                 }
 
                 if (Str::contains($path, 'app')) {
+
                     $domains[$title] = $data;
+
+                    if($title !== 'app'){
+
+                        $files = File::allFiles($data['real_path'].'../config');
+
+                        foreach ($files as $file) {
+                            $configName = explode('.', $file->getFilename())[0] ?? null;
+                            $domains[$title]['config_files'][] = [
+                                'path' => $file->getRealPath(),
+                                'name' => $configName
+                            ];
+                        }
+
+
+                        if (is_dir($data['real_path'].'/Providers')) {
+                            foreach (File::allFiles($data['real_path'].'/Providers') as $file) {
+                                $fileName = explode('.', $file->getFilename())[0];
+
+                                $domains[$title]['providers'][] = [
+                                    'path' => '\\'.$data['namespace'].'Providers\\'.$fileName,
+                                ];
+                                
+                            }
+                        }
+
+
+                        if (is_dir($data['real_path'].'/Console/Commands')) {
+
+                            foreach (File::allFiles($data['real_path'].'/Console/Commands') as $file) {
+                                $fileName = explode('.', $file->getFilename())[0];
+                                $domains[$title]['commands'][] = [
+                                    'path' => '\\'.$data['namespace'].'Console\\Commands\\'.$fileName,
+                                ]; 
+                            }
+                        }
+                        
+                    }
 
                     continue;
                 }
@@ -75,27 +170,18 @@ class DomainSupport
 
                 $i++;
             }
-            return [
+
+         return [
                 'factories' => $factories,
                 'domains' => $domains,
                 'seeders' => $seeders,
             ];
-        });
-
-        $this->seeders = $cachedData['seeders'];
-        $this->factories = $cachedData['factories'];
-        $this->domains = $cachedData['domains'];
     }
 
     public static function init($withoutCache = false): DomainSupport
     {
         if (self::$instance === null) {
             self::$instance = new self();
-        }
-
-        if ($withoutCache) {
-            self::$instance->withoutCache = $withoutCache;
-            self::$instance->generate();
         }
 
         return self::$instance;

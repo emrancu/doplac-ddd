@@ -33,8 +33,6 @@
         "ZupiterDoplac\\Domain\\DomainDrivenServiceProvider"
       ],
       "commands": [
-        "ZupiterDoplac\\Domain\\Commands\\DomainMigration",
-        "ZupiterDoplac\\Domain\\Commands\\DomainSeed"
       ]
     }
   },
