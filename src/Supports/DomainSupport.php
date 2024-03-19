@@ -22,47 +22,20 @@ class DomainSupport
         $this->cacheData();
     }
 
-   private function arrayToString($array, $indent = 0) {
-        $output = '';
-
-        foreach ($array as $key => $value) {
-            $output .= str_repeat(' ', $indent * 4) . "'" . $key . "' => ";
-
-            if (is_array($value)) {
-                $output .= "[\n" . $this->arrayToString($value, $indent + 1) . str_repeat(' ', $indent * 4) . "],\n";
-            } else {
-                $output .= "'" . addslashes($value) . "',\n";
-            }
-        }
-
-        return $output;
-    }
-
-
-    public static function clearData()
-    {
-        $storagePath = storage_path('app/domain-data.php');
-
-        if (file_exists($storagePath)) {
-            unlink($storagePath);
-        }
-    }
-
-
     private function cacheData()
     {
         $storagePath = storage_path('app/domain-data.php');
 
-        File::
 
         if (!file_exists($storagePath)) {
+            File::makeDirectory(storage_path('app'));
 
             $content = $this->data();
 
             $returnStatement = $this->arrayToString($content, 1);
 
             $contentFinal = "<?php\n\n";
-            $contentFinal .= "return [\n" . $returnStatement . "];\n";
+            $contentFinal .= "return [\n".$returnStatement."];\n";
 
             $this->seeders = $content['seeders'];
             $this->factories = $content['factories'];
@@ -74,7 +47,7 @@ class DomainSupport
             return;
         }
 
-        $content =  include $storagePath;
+        $content = include $storagePath;
         $this->seeders = $content['seeders'];
         $this->factories = $content['factories'];
         $this->domains = $content['domains'];
@@ -84,100 +57,121 @@ class DomainSupport
     {
         /** @var array{ factories: array, domains: array, seeders: array } $cachedData */
 
-            $composerData = json_decode(file_get_contents(base_path('composer.json')), true);
-            $autoload = $composerData['autoload']['psr-4'] ?? [];
+        $composerData = json_decode(file_get_contents(base_path('composer.json')), true);
+        $autoload = $composerData['autoload']['psr-4'] ?? [];
 
-            ksort($autoload);
-            $seeders = [];
-            $domains = [];
-            $factories = [];
+        ksort($autoload);
+        $seeders = [];
+        $domains = [];
+        $factories = [];
 
-            $i = 1;
-            foreach ($autoload as $namespace => $path) {
-                if (!is_dir(base_path($path))) {
-                    continue;
-                }
-
-                if ($namespace == 'App\\') {
-                    $title = 'app';
-                } else {
-                    $pattern = '/domains\/([^\/]+)\//';
-                    preg_match($pattern, $path, $matches);
-                    $title = trim($matches[1] ?? $namespace, '\\');
-                }
-
-                $data = [
-                    'title' => $title,
-                    'namespace' => $namespace,
-                    'path' => $path,
-                    'real_path' => base_path($path),
-                    'config_files' => [],
-                    'providers' => [],
-                    'commands' => [],
-                ];
-
-                if (Str::contains($path, 'seeders')) {
-                    $seeders[$title] = $data;
-
-                    continue;
-                }
-
-                if (Str::contains($path, 'app')) {
-
-                    $domains[$title] = $data;
-
-                    if($title !== 'app'){
-
-                        $files = File::allFiles($data['real_path'].'../config');
-
-                        foreach ($files as $file) {
-                            $configName = explode('.', $file->getFilename())[0] ?? null;
-                            $domains[$title]['config_files'][] = [
-                                'path' => $file->getRealPath(),
-                                'name' => $configName
-                            ];
-                        }
-
-
-                        if (is_dir($data['real_path'].'/Providers')) {
-                            foreach (File::allFiles($data['real_path'].'/Providers') as $file) {
-                                $fileName = explode('.', $file->getFilename())[0];
-
-                                $domains[$title]['providers'][] = [
-                                    'path' => '\\'.$data['namespace'].'Providers\\'.$fileName,
-                                ];
-                                
-                            }
-                        }
-
-
-                        if (is_dir($data['real_path'].'/Console/Commands')) {
-
-                            foreach (File::allFiles($data['real_path'].'/Console/Commands') as $file) {
-                                $fileName = explode('.', $file->getFilename())[0];
-                                $domains[$title]['commands'][] = [
-                                    'path' => '\\'.$data['namespace'].'Console\\Commands\\'.$fileName,
-                                ]; 
-                            }
-                        }
-                        
-                    }
-
-                    continue;
-                }
-
-                if (Str::contains($path, 'factories')) {
-                    $factories[$title] = $data;
-                }
-
-                $i++;
+        $i = 1;
+        foreach ($autoload as $namespace => $path) {
+            if (!is_dir(base_path($path))) {
+                continue;
             }
 
-         return [
-                'factories' => $factories,
-                'domains' => $domains,
-                'seeders' => $seeders,
+            if ($namespace == 'App\\') {
+                $title = 'app';
+            } else {
+                $pattern = '/domains\/([^\/]+)\//';
+                preg_match($pattern, $path, $matches);
+                $title = trim($matches[1] ?? $namespace, '\\');
+            }
+
+            $data = [
+                'title' => $title,
+                'namespace' => $namespace,
+                'path' => $path,
+                'real_path' => base_path($path),
+                'config_files' => [],
+                'providers' => [],
+                'commands' => [],
             ];
+
+            if (Str::contains($path, 'seeders')) {
+                $seeders[$title] = $data;
+
+                continue;
+            }
+
+            if (Str::contains($path, 'app')) {
+                $domains[$title] = $data;
+
+                if ($title !== 'app') {
+                    $files = File::allFiles($data['real_path'].'../config');
+
+                    foreach ($files as $file) {
+                        $configName = explode('.', $file->getFilename())[0] ?? null;
+                        $domains[$title]['config_files'][] = [
+                            'path' => $file->getRealPath(),
+                            'name' => $configName
+                        ];
+                    }
+
+
+                    if (is_dir($data['real_path'].'/Providers')) {
+                        foreach (File::allFiles($data['real_path'].'/Providers') as $file) {
+                            $fileName = explode('.', $file->getFilename())[0];
+
+                            $domains[$title]['providers'][] = [
+                                'path' => '\\'.$data['namespace'].'Providers\\'.$fileName,
+                            ];
+                        }
+                    }
+
+
+                    if (is_dir($data['real_path'].'/Console/Commands')) {
+                        foreach (File::allFiles($data['real_path'].'/Console/Commands') as $file) {
+                            $fileName = explode('.', $file->getFilename())[0];
+                            $domains[$title]['commands'][] = [
+                                'path' => '\\'.$data['namespace'].'Console\\Commands\\'.$fileName,
+                            ];
+                        }
+                    }
+                }
+
+                continue;
+            }
+
+            if (Str::contains($path, 'factories')) {
+                $factories[$title] = $data;
+            }
+
+            $i++;
+        }
+
+        return [
+            'factories' => $factories,
+            'domains' => $domains,
+            'seeders' => $seeders,
+        ];
+    }
+
+    private function arrayToString($array, $indent = 0)
+    {
+        $output = '';
+
+        foreach ($array as $key => $value) {
+            $output .= str_repeat(' ', $indent * 4)."'".$key."' => ";
+
+            if (is_array($value)) {
+                $output .= "[\n".$this->arrayToString($value, $indent + 1).str_repeat(' ', $indent * 4)."],\n";
+            } else {
+                $output .= "'".addslashes($value)."',\n";
+            }
+        }
+
+        return $output;
+    }
+
+    public static function clearData()
+    {
+        $storagePath = storage_path('app/domain-data.php');
+
+        if (file_exists($storagePath)) {
+            unlink($storagePath);
+        }
     }
 
     public static function init($withoutCache = false): DomainSupport
