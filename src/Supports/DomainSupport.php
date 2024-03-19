@@ -53,6 +53,8 @@ class DomainSupport
     {
         $storagePath = storage_path('app/domain-data.php');
 
+        File::
+
         if (!file_exists($storagePath)) {
 
             $content = $this->data();
