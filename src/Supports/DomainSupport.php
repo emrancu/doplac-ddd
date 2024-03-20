@@ -93,7 +93,6 @@ class DomainSupport
         $domains = [];
         $factories = [];
 
-        $i = 1;
         foreach ($autoload as $namespace => $path) {
             if (!is_dir(base_path($path))) {
                 continue;
@@ -111,7 +110,7 @@ class DomainSupport
                 'title' => $title,
                 'namespace' => $namespace,
                 'path' => $path,
-                'real_path' => base_path($path),
+                'real_path' => str_replace(base_path(), '', base_path($path)),
                 'config_files' => [],
                 'providers' => [],
                 'commands' => [],
@@ -129,19 +128,21 @@ class DomainSupport
 
                 if($title !== 'app'){
 
-                    $files = File::allFiles($data['real_path'].'../config');
+                    $files = File::allFiles(base_path($path).'../config');
 
                     foreach ($files as $file) {
                         $configName = explode('.', $file->getFilename())[0] ?? null;
+
+
                         $domains[$title]['config_files'][] = [
-                            'path' => $file->getRealPath(),
+                            'path' => str_replace(base_path(), '',$file->getRealPath()),
                             'name' => $configName
                         ];
                     }
 
 
-                    if (is_dir($data['real_path'].'/Providers')) {
-                        foreach (File::allFiles($data['real_path'].'/Providers') as $file) {
+                    if (is_dir(base_path($path).'Providers')) {
+                        foreach (File::allFiles(base_path($path).'Providers') as $file) {
                             $fileName = explode('.', $file->getFilename())[0];
 
                             $domains[$title]['providers'][] = [
@@ -152,9 +153,9 @@ class DomainSupport
                     }
 
 
-                    if (is_dir($data['real_path'].'/Console/Commands')) {
+                    if (is_dir(base_path($path).'Console/Commands')) {
 
-                        foreach (File::allFiles($data['real_path'].'/Console/Commands') as $file) {
+                        foreach (File::allFiles(base_path($path).'Console/Commands') as $file) {
                             $fileName = explode('.', $file->getFilename())[0];
                             $domains[$title]['commands'][] = [
                                 'path' => '\\'.$data['namespace'].'Console\\Commands\\'.$fileName,
@@ -171,7 +172,6 @@ class DomainSupport
                 $factories[$title] = $data;
             }
 
-            $i++;
         }
 
         return [

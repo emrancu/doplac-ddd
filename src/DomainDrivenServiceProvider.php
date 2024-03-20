@@ -28,7 +28,7 @@ class DomainDrivenServiceProvider extends ServiceProvider
                 foreach ($domain['config_files'] as $file) {
                     if($file['path'] ?? false){
                         $configName = $file['name'];
-                        Config::set("$baseName.$configName", require $file['path']);
+                        Config::set("$baseName.$configName", require base_path($file['path']));
                     }
                 }
             }
@@ -39,7 +39,7 @@ class DomainDrivenServiceProvider extends ServiceProvider
                 continue;
             }
 
-            if (is_dir($domain['real_path'].'/Providers')) {
+            if (is_dir(base_path($domain['real_path']).'Providers')) {
                 foreach ($domain['providers'] as $file) {
                     app()->register($file['path']);
                 }
@@ -54,7 +54,7 @@ class DomainDrivenServiceProvider extends ServiceProvider
                     continue;
                 }
 
-                if (is_dir($domain['real_path'].'/Console/Commands')) {
+                if (is_dir(base_path($domain['real_path']).'Console/Commands')) {
                     foreach ($domain['commands'] as $file) {
                         $commands[] = $file['path'];
                     }
