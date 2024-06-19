@@ -47,7 +47,7 @@ trait GeneratorOverride
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
 
-        return $this->domain['real_path'].str_replace('\\', '/', $name).'.php';
+        return base_path($this->domain['real_path']).str_replace('\\', '/', $name).'.php';
     }
 
 }
